@@ -104,6 +104,9 @@ terraform plan -var-file="environments/prod/prod.tfvars" -no-color -out="prod/tf
 
 # Apply the configuration
 terraform apply prod/tf.plan
+
+# Destroy
+terraform destroy -var-file="environments/prod/prod.tfvars" -auto-approve
 ```
 
 ## Configuration Options
