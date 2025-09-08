@@ -1,6 +1,6 @@
 # 🧪 Lab Deploying a Basic Web Application on AWS with Terraform
 
-## 📌 Giới thiệu
+## 📌 Introduce
 This lab provides a step-by-step guide to deploying a basic web application on AWS using **Terraform**.  
 The system consists of the following core components:  
 
@@ -15,10 +15,7 @@ The system consists of the following core components:
 ## 🏗️ Deployment Architecture
 The overall infrastructure model: 
 
-```
 ![Architecture](RDS/image/getting-started-mysql.png)
-
-````
 
 ---
 
