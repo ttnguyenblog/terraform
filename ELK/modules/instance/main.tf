@@ -1,0 +1,58 @@
+resource "aws_key_pair" "key_pair" {
+  key_name   = var.key_name
+  public_key = file(var.path_to_public_key)
+}
+
+resource "aws_instance" "instances" {
+
+  count = var.create_webapp ? length(var.webapp_instance_types) : 0
+
+  ami           = var.ami_id
+  instance_type = var.webapp_instance_types[count.index]
+
+  subnet_id              = var.public_subnets_id[count.index % length(var.public_subnets_id)]
+  vpc_security_group_ids = var.security_group_id
+
+  key_name = aws_key_pair.key_pair.key_name
+
+  tags = {
+    Name = "${var.instance_name}-${count.index + 1}"
+  }
+
+  provisioner "file" {
+    source      = "tmp/apache-01.conf"
+    destination = "/tmp/apache-01.conf"
+  }
+
+  provisioner "file" {
+    source      = "tmp/elasticsearch.yml"
+    destination = "/tmp/elasticsearch.yml"
+  }
+
+
+  provisioner "file" {
+    source      = "tmp/installELK.sh"
+    destination = "/tmp/installELK.sh"
+  }
+
+
+  provisioner "file" {
+    source      = "tmp/kibana.yml"
+    destination = "/tmp/kibana.yml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/installELK.sh",
+      "sudo sed -i -e 's/\r$//' /tmp/installELK.sh", 
+      "sudo /tmp/installELK.sh",
+    ]
+  }
+
+  connection {
+    host        = coalesce(self.public_ip, self.private_ip)
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file(var.path_to_private_key)
+  }
+}
